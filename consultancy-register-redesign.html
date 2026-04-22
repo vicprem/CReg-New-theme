@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Consultancy Register – Find & List Expert Consultants</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --black:      #080808;
+  --dark:       #101010;
+  --card:       #161616;
+  --white:      #ffffff;
+  --offwhite:   #f4f3ef;
+  --green:      #4dba3f;
+  --green-d:    #3a9b2e;
+  --green-glow: rgba(77,186,63,0.22);
+  --muted:      #7a7a7a;
+  --border:     rgba(255,255,255,0.07);
+  --r:          14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { font-family:'DM Sans',sans-serif; background:var(--black); color:var(--white); overflow-x:hidden; }
+::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:#000; } ::-webkit-scrollbar-thumb { background:#2a2a2a; border-radius:3px; }
+
+/* ─── NAV ─── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  height:66px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 52px;
+  background:rgba(8,8,8,0.8);
+  backdrop-filter:blur(22px) saturate(160%);
+  border-bottom:1px solid var(--border);
+  transition:background .3s;
+}
+.logo { font-family:'Syne',sans-serif; font-weight:800; font-size:19px; letter-spacing:-.4px; color:var(--white); text-decoration:none; }
+.logo em { color:var(--green); font-style:normal; }
+.nav-links { display:flex; gap:30px; list-style:none; }
+.nav-links a { font-size:14px; color:rgba(255,255,255,0.65); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:#fff; }
+.nav-ctas { display:flex; gap:10px; align-items:center; }
+.btn-ghost { font-family:'DM Sans',sans-serif; font-size:14px; padding:9px 22px; border-radius:100px; border:1px solid rgba(255,255,255,0.17); background:transparent; color:#fff; cursor:pointer; text-decoration:none; transition:all .2s; }
+.btn-ghost:hover { border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.05); }
+.btn-green { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; padding:9px 22px; border-radius:100px; border:none; background:var(--green); color:#fff; cursor:pointer; text-decoration:none; transition:all .2s; }
+.btn-green:hover { background:var(--green-d); transform:translateY(-1px); box-shadow:0 6px 20px var(--green-glow); }
+
+/* ─── HERO ─── */
+.hero {
+  position:relative; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:130px 24px 90px; overflow:hidden;
+}
+.hero-video-wrap { position:absolute; inset:0; z-index:0; }
+.hero-video-wrap video { width:100%; height:100%; object-fit:cover; }
+.hero-overlay {
+  position:absolute; inset:0; z-index:1;
+  background:linear-gradient(to bottom, rgba(8,8,8,.75) 0%, rgba(8,8,8,.45) 35%, rgba(8,8,8,.78) 75%, rgba(8,8,8,1) 100%);
+}
+/* grain */
+.hero-grain {
+  position:absolute; inset:0; z-index:2; opacity:.04; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+.hero-content { position:relative; z-index:3; max-width:920px; width:100%; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12px; font-weight:500; letter-spacing:.5px; color:var(--green);
+  border:1px solid rgba(77,186,63,.3); background:rgba(77,186,63,.08);
+  padding:7px 16px; border-radius:100px; margin-bottom:36px;
+  opacity:0; animation:fadeUp .55s .12s forwards;
+}
+.hero-badge-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 9px var(--green); animation:blink 2.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.hero-h1 {
+  font-family:'Syne',sans-serif;
+  font-size:clamp(50px,8.5vw,100px); font-weight:800; line-height:.96; letter-spacing:-3px;
+  margin-bottom:10px;
+  opacity:0; animation:fadeUp .65s .28s forwards;
+}
+.hero-rotate-wrap { display:block; height:1.04em; overflow:hidden; color:var(--green); }
+.hero-rotator { display:flex; flex-direction:column; animation:rotWords 8s cubic-bezier(.4,0,.2,1) infinite; }
+.hero-rotator span { display:block; height:1.04em; }
+@keyframes rotWords {
+  0%,16%  { transform:translateY(0) }
+  20%,36% { transform:translateY(-1.04em) }
+  40%,56% { transform:translateY(-2.08em) }
+  60%,76% { transform:translateY(-3.12em) }
+  80%,96% { transform:translateY(-4.16em) }
+  100%    { transform:translateY(0) }
+}
+.hero-sub {
+  font-size:clamp(16px,1.8vw,20px); font-weight:300; line-height:1.72;
+  color:rgba(255,255,255,.6); max-width:580px; margin:30px auto 46px;
+  opacity:0; animation:fadeUp .65s .46s forwards;
+}
+.hero-ctas { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; opacity:0; animation:fadeUp .65s .62s forwards; }
+.btn-hero { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:500; padding:15px 38px; border-radius:100px; background:var(--green); color:#fff; border:none; cursor:pointer; text-decoration:none; transition:all .25s; display:inline-block; }
+.btn-hero:hover { background:var(--green-d); transform:translateY(-2px); box-shadow:0 12px 32px var(--green-glow); }
+.btn-hero-out { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:400; padding:15px 38px; border-radius:100px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.22); color:#fff; cursor:pointer; text-decoration:none; transition:all .25s; display:inline-block; backdrop-filter:blur(8px); }
+.btn-hero-out:hover { background:rgba(255,255,255,.13); border-color:rgba(255,255,255,.42); }
+.hero-stats {
+  display:flex; gap:56px; justify-content:center; flex-wrap:wrap;
+  margin-top:72px; padding-top:52px; border-top:1px solid rgba(255,255,255,.1);
+  opacity:0; animation:fadeUp .65s .8s forwards;
+}
+.stat-n { font-family:'Syne',sans-serif; font-size:38px; font-weight:800; letter-spacing:-1.5px; }
+.stat-l { font-size:13px; color:var(--muted); margin-top:4px; }
+.hero-scroll-indicator {
+  position:absolute; bottom:34px; left:50%; transform:translateX(-50%); z-index:3;
+  display:flex; flex-direction:column; align-items:center; gap:7px;
+  opacity:0; animation:fadeUp .5s 1.3s forwards;
+}
+.scroll-line { width:1px; height:52px; background:linear-gradient(to bottom,rgba(255,255,255,.3),transparent); animation:scrollAnim 2.2s ease-in-out infinite; }
+@keyframes scrollAnim { 0%,100%{opacity:.5;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+.scroll-txt { font-size:10px; color:rgba(255,255,255,.28); letter-spacing:2px; text-transform:uppercase; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── TICKER ─── */
+.ticker { background:#0b0b0b; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:24px 0; overflow:hidden; display:flex; align-items:center; }
+.ticker-lbl { flex-shrink:0; padding:0 36px 0 48px; font-size:12px; font-weight:500; color:var(--muted); letter-spacing:.5px; white-space:nowrap; border-right:1px solid var(--border); }
+.ticker-wrap { overflow:hidden; flex:1; }
+.ticker-track { display:flex; gap:60px; width:max-content; animation:tick 28s linear infinite; }
+.ticker-track span { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.18); white-space:nowrap; }
+@keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ─── SECTION UTILS ─── */
+section { padding:100px 52px; }
+.max { max-width:1220px; margin:0 auto; }
+.lbl { font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--green); margin-bottom:18px; }
+.h2 { font-family:'Syne',sans-serif; font-size:clamp(32px,3.8vw,54px); font-weight:800; letter-spacing:-1.5px; line-height:1.07; max-width:640px; }
+.sub { font-size:17px; font-weight:300; color:rgba(255,255,255,.5); max-width:510px; line-height:1.74; margin-top:16px; }
+
+/* ─── HOW IT WORKS ─── */
+.how { background:var(--dark); }
+.how-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+.steps-list { display:flex; flex-direction:column; gap:0; margin-top:50px; }
+.step { display:flex; gap:22px; align-items:flex-start; padding:28px 0; border-bottom:1px solid var(--border); opacity:0; transform:translateY(18px); transition:opacity .5s,transform .5s; }
+.step:last-child { border-bottom:none; }
+.step.vis { opacity:1; transform:translateY(0); }
+.step-n { flex-shrink:0; width:38px; height:38px; border-radius:50%; border:1px solid rgba(77,186,63,.4); color:var(--green); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; }
+.step h3 { font-family:'Syne',sans-serif; font-size:17px; font-weight:700; margin-bottom:7px; }
+.step p { font-size:14px; color:rgba(255,255,255,.47); line-height:1.67; }
+.how-img-panel { position:relative; border-radius:20px; overflow:hidden; aspect-ratio:4/5; }
+.how-img-panel img { width:100%; height:100%; object-fit:cover; filter:brightness(.8); transition:transform 6s ease; }
+.how-img-panel:hover img { transform:scale(1.05); }
+.how-overlay { position:absolute; bottom:0; left:0; right:0; padding:36px 32px; background:linear-gradient(to top,rgba(0,0,0,.88) 0%,transparent 100%); }
+.how-tag { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; color:var(--green); background:rgba(77,186,63,.12); border:1px solid rgba(77,186,63,.25); padding:5px 12px; border-radius:100px; margin-bottom:10px; }
+.how-big-num { font-family:'Syne',sans-serif; font-size:30px; font-weight:800; letter-spacing:-1px; }
+.how-num-sub { font-size:13px; color:rgba(255,255,255,.52); margin-top:3px; }
+
+/* ─── SPLIT VIDEO FEATURE ─── */
+.vf { background:var(--black); padding:0; }
+.vf-inner { display:grid; grid-template-columns:1fr 1fr; min-height:620px; }
+.vf-video { position:relative; overflow:hidden; }
+.vf-video video { width:100%; height:100%; object-fit:cover; }
+.vf-video-grad { position:absolute; inset:0; background:linear-gradient(135deg,rgba(8,8,8,.5) 0%,transparent 70%); }
+.vf-text { padding:90px 68px; display:flex; flex-direction:column; justify-content:center; background:var(--card); }
+.vf-chips { display:flex; flex-wrap:wrap; gap:9px; margin-top:32px; }
+.chip { font-size:13px; padding:8px 16px; border-radius:100px; border:1px solid var(--border); color:rgba(255,255,255,.58); background:rgba(255,255,255,.04); }
+.chip.on { border-color:rgba(77,186,63,.42); color:var(--green); background:rgba(77,186,63,.08); }
+.vf-btn { margin-top:38px; display:inline-block; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; padding:13px 30px; border-radius:100px; background:var(--green); color:#fff; text-decoration:none; border:none; cursor:pointer; transition:all .22s; }
+.vf-btn:hover { background:var(--green-d); transform:translateY(-2px); box-shadow:0 8px 24px var(--green-glow); }
+
+/* ─── FEATURES ─── */
+.features { background:var(--dark); }
+.feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:60px; }
+.feat-card { background:var(--card); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; transition:border-color .25s,transform .25s; }
+.feat-card:hover { border-color:rgba(77,186,63,.32); transform:translateY(-4px); }
+.feat-img { width:100%; aspect-ratio:16/9; overflow:hidden; }
+.feat-img img { width:100%; height:100%; object-fit:cover; filter:brightness(.72) saturate(.75); transition:transform .6s,filter .4s; }
+.feat-card:hover .feat-img img { transform:scale(1.07); filter:brightness(.85) saturate(1); }
+.feat-body { padding:28px; }
+.feat-icon { font-size:22px; margin-bottom:14px; }
+.feat-title { font-family:'Syne',sans-serif; font-size:19px; font-weight:700; margin-bottom:9px; }
+.feat-desc { font-size:14px; color:rgba(255,255,255,.46); line-height:1.7; }
+
+/* ─── TESTIMONIALS ─── */
+.testi { background:var(--black); }
+.tes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:60px; }
+.tes-card { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:36px; display:flex; flex-direction:column; gap:20px; transition:border-color .25s; }
+.tes-card:hover { border-color:rgba(77,186,63,.25); }
+.stars { color:var(--green); font-size:13px; letter-spacing:2px; }
+.tes-q { font-size:15px; line-height:1.74; color:rgba(255,255,255,.7); font-style:italic; flex:1; }
+.tes-auth { display:flex; gap:14px; align-items:center; }
+.tes-av { width:46px; height:46px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--border); }
+.tes-name { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; }
+.tes-role { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* ─── CATEGORIES ─── */
+.cats { background:var(--offwhite); }
+.cats .lbl { color:#1e7012; }
+.cats .h2 { color:#080808; }
+.cats .sub { color:rgba(0,0,0,.46); }
+.cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:54px; }
+.cat-card { position:relative; border-radius:var(--r); overflow:hidden; aspect-ratio:4/3; text-decoration:none; display:block; }
+.cat-card img { width:100%; height:100%; object-fit:cover; transition:transform .55s; filter:brightness(.48) saturate(.7); }
+.cat-card:hover img { transform:scale(1.09); filter:brightness(.6) saturate(1); }
+.cat-over { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.08) 60%); display:flex; flex-direction:column; justify-content:flex-end; padding:22px 20px; }
+.cat-em { font-size:22px; margin-bottom:6px; }
+.cat-nm { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:#fff; }
+.cat-ct { font-size:12px; color:rgba(255,255,255,.5); margin-top:2px; }
+.cat-arr { position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.12); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; opacity:0; transition:opacity .25s; }
+.cat-card:hover .cat-arr { opacity:1; }
+
+/* ─── CTA VIDEO BANNER ─── */
+.cta-vid { position:relative; }
+.cta-vid-inner { position:relative; height:540px; overflow:hidden; }
+.cta-vid-inner video { width:100%; height:100%; object-fit:cover; }
+.cta-vid-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(5,5,5,.92) 0%,rgba(20,60,14,.88) 100%); }
+.cta-content { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 32px; }
+.cta-content .lbl { color:rgba(255,255,255,.58); }
+.cta-content .h2 { max-width:680px; margin:0 auto 18px; }
+.cta-sub { font-size:18px; font-weight:300; color:rgba(255,255,255,.62); max-width:460px; line-height:1.68; margin-bottom:40px; }
+.btn-wh { font-family:'DM Sans',sans-serif; font-size:16px; font-weight:500; padding:15px 42px; border-radius:100px; background:#fff; color:#1a4a14; border:none; cursor:pointer; text-decoration:none; transition:all .25s; display:inline-block; }
+.btn-wh:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,.35); }
+
+/* ─── FOOTER ─── */
+footer { background:#050505; border-top:1px solid var(--border); padding:70px 52px 40px; }
+.foot-grid { display:grid; grid-template-columns:2.2fr 1fr 1fr 1fr; gap:52px; max-width:1220px; margin:0 auto 56px; }
+.foot-logo-txt { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:14px; }
+.foot-logo-txt em { color:var(--green); font-style:normal; }
+.foot-desc { font-size:14px; color:var(--muted); line-height:1.76; max-width:270px; }
+.foot-hero-img { width:100%; border-radius:10px; margin-top:22px; height:110px; object-fit:cover; filter:brightness(.45) grayscale(.3); }
+.foot-col h4 { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:18px; letter-spacing:.4px; }
+.foot-col ul { list-style:none; display:flex; flex-direction:column; gap:12px; }
+.foot-col a { font-size:14px; color:var(--muted); text-decoration:none; transition:color .2s; }
+.foot-col a:hover { color:#fff; }
+.foot-bottom { border-top:1px solid var(--border); padding-top:28px; display:flex; align-items:center; justify-content:space-between; max-width:1220px; margin:0 auto; font-size:13px; color:var(--muted); }
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){
+  nav { padding:0 28px; } .nav-links { display:none; } section { padding:72px 28px; }
+  .how-grid { grid-template-columns:1fr; gap:48px; } .how-img-panel { aspect-ratio:16/7; }
+  .vf-inner { grid-template-columns:1fr; } .vf-video { min-height:360px; }
+  .feat-grid { grid-template-columns:1fr 1fr; } .tes-grid { grid-template-columns:1fr; }
+  .cat-grid { grid-template-columns:1fr 1fr; } .foot-grid { grid-template-columns:1fr 1fr; }
+  .foot-bottom { flex-direction:column; gap:10px; text-align:center; }
+}
+@media(max-width:640px){
+  .hero-h1 { letter-spacing:-2px; } .hero-ctas { flex-direction:column; align-items:center; }
+  .hero-stats { gap:32px; } .feat-grid { grid-template-columns:1fr; } .foot-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="logo" href="#">Consultancy<em>Register</em></a>
+  <ul class="nav-links">
+    <li><a href="#">Find Consultants</a></li>
+    <li><a href="#">Categories</a></li>
+    <li><a href="#">How It Works</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">Resources</a></li>
+  </ul>
+  <div class="nav-ctas">
+    <a href="#" class="btn-ghost">Log in</a>
+    <a href="#" class="btn-green">List your practice</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO — full-screen looping video bg
+════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-video-wrap" id="heroVideoWrap">
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto"
+      poster="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&q=80&fit=crop">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-business-team-working-in-an-office-4815-large.mp4" type="video/mp4"/>
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-people-working-at-desks-in-a-modern-office-42647-large.mp4" type="video/mp4"/>
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-working-at-a-table-top-view-1164-large.mp4" type="video/mp4"/>
+    </video>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      The UK's #1 Consultancy Directory
+    </div>
+    <h1 class="hero-h1">
+      Be the next<br>
+      <span class="hero-rotate-wrap">
+        <span class="hero-rotator">
+          <span>expert they trust</span>
+          <span>firm they call</span>
+          <span>practice that scales</span>
+          <span>name they know</span>
+          <span>consultant they need</span>
+          <span>expert they trust</span>
+        </span>
+      </span>
+    </h1>
+    <p class="hero-sub">Connect with thousands of UK businesses seeking expert guidance. Register your practice, get verified, and grow your client base — all in one trusted place.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-hero">Find a consultant →</a>
+      <a href="#" class="btn-hero-out">List your practice</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n">12,000+</div><div class="stat-l">Registered consultants</div></div>
+      <div class="stat"><div class="stat-n">4,800+</div><div class="stat-l">Businesses served</div></div>
+      <div class="stat"><div class="stat-n">98%</div><div class="stat-l">Satisfaction rate</div></div>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-txt">Scroll</span>
+  </div>
+</section>
+
+<!-- TRUSTED BY TICKER -->
+<div class="ticker">
+  <span class="ticker-lbl">Trusted by teams at</span>
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span>Deloitte</span><span>KPMG</span><span>NHS England</span><span>Barclays</span>
+      <span>Rolls-Royce</span><span>Unilever</span><span>Vodafone</span><span>BP</span>
+      <span>Tesco</span><span>AstraZeneca</span><span>GSK</span><span>HSBC</span>
+      <span>Deloitte</span><span>KPMG</span><span>NHS England</span><span>Barclays</span>
+      <span>Rolls-Royce</span><span>Unilever</span><span>Vodafone</span><span>BP</span>
+      <span>Tesco</span><span>AstraZeneca</span><span>GSK</span><span>HSBC</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HOW IT WORKS — premium image panel
+════════════════════════════════════════ -->
+<section class="how">
+  <div class="max how-grid">
+    <div>
+      <div class="lbl">How it works</div>
+      <h2 class="h2">Your expertise, finally discoverable</h2>
+      <p class="sub">Consultancy Register makes it effortless for the right clients to find you — and for businesses to vet and connect with proven experts.</p>
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-n">1</div>
+          <div><h3>Create your profile</h3><p>Build a rich profile showcasing your expertise, credentials, case studies, and client testimonials in minutes.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <div><h3>Get verified</h3><p>Our team reviews your qualifications and experience — giving clients confidence in every consultant they find.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <div><h3>Connect &amp; grow</h3><p>Receive inbound enquiries, respond to project briefs, and build long-term relationships through our platform.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="how-img-panel">
+      <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=85&fit=crop&crop=center"
+           alt="Professional consultants collaborating in a modern office" loading="lazy"/>
+      <div class="how-overlay">
+        <div class="how-tag">● Live on the platform</div>
+        <div class="how-big-num">12,000+</div>
+        <div class="how-num-sub">Verified consultants ready to connect</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SPLIT VIDEO FEATURE — brief matching
+════════════════════════════════════════ -->
+<div class="vf">
+  <div class="vf-inner">
+    <!-- VIDEO SIDE -->
+    <div class="vf-video">
+      <video autoplay muted loop playsinline preload="auto"
+        poster="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=900&q=80&fit=crop">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-man-working-at-his-desk-with-a-laptop-1169-large.mp4" type="video/mp4"/>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-businessman-reviewing-documents-4805-large.mp4" type="video/mp4"/>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-business-woman-working-at-her-desk-1326-large.mp4" type="video/mp4"/>
+      </video>
+      <div class="vf-video-grad"></div>
+    </div>
+    <!-- TEXT SIDE -->
+    <div class="vf-text">
+      <div class="lbl">Smart matching</div>
+      <h2 class="h2" style="max-width:460px;">The right consultant for every brief</h2>
+      <p class="sub">Post a project brief and our intelligent matching engine surfaces the most relevant, vetted consultants for your specific needs — instantly.</p>
+      <div class="vf-chips">
+        <span class="chip on">✓ Sector expertise</span>
+        <span class="chip on">✓ Availability matched</span>
+        <span class="chip">Rate aligned</span>
+        <span class="chip">Location filter</span>
+        <span class="chip">Verified credentials</span>
+      </div>
+      <a href="#" class="vf-btn">Post a brief →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     FEATURES — cards with imagery
+════════════════════════════════════════ -->
+<section class="features">
+  <div class="max">
+    <div class="lbl">Platform features</div>
+    <h2 class="h2">Everything built for serious consulting</h2>
+    <p class="sub">Purpose-built tools for consultants who want more clients, and businesses that need expert guidance — no noise in between.</p>
+    <div class="feat-grid">
+
+      <div class="feat-card">
+        <div class="feat-img"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80&fit=crop" alt="Smart search interface" loading="lazy"/></div>
+        <div class="feat-body"><div class="feat-icon">🔍</div><div class="feat-title">Smart Search</div><div class="feat-desc">Filter by sector, specialism, location, day rate, and live availability. Find the exact expertise you need in seconds.</div></div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img"><img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=700&q=80&fit=crop" alt="Verified consultant handshake" loading="lazy"/></div>
+        <div class="feat-body"><div class="feat-icon">✅</div><div class="feat-title">Verified Profiles</div><div class="feat-desc">Every consultant is individually reviewed. Qualifications, experience, and references are validated before any profile goes live.</div></div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=700&q=80&fit=crop" alt="Reviews and ratings" loading="lazy"/></div>
+        <div class="feat-body"><div class="feat-icon">⭐</div><div class="feat-title">Reviews &amp; Ratings</div><div class="feat-desc">Transparent, verified client reviews help you make confident decisions and reward consultants who deliver real results.</div></div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img"><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=700&q=80&fit=crop" alt="Brief matching analytics" loading="lazy"/></div>
+        <div class="feat-body"><div class="feat-icon">📋</div><div class="feat-title">Brief Matching</div><div class="feat-desc">Post a project brief and let our matching engine surface the most relevant consultants automatically — no cold calling.</div></div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img"><img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=700&q=80&fit=crop" alt="Portfolio and case studies" loading="lazy"/></div>
+        <div class="feat-body"><div class="feat-icon">💼</div><div class="feat-title">Portfolio Showcase</div><div class="feat-desc">Publish detailed case studies and demonstrate measurable impact with rich media, charts, and client outcomes.</div></div>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-img"><img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=700&q=80&fit=crop" alt="Secure encrypted messaging" loading="lazy"/></div>
+        <div class="feat-body"><div class="feat-icon">🔒</div><div class="feat-title">Secure Messaging</div><div class="feat-desc">Communicate, share documents, and agree terms within our confidential, encrypted platform environment.</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     TESTIMONIALS — with real headshots
+════════════════════════════════════════ -->
+<section class="testi">
+  <div class="max">
+    <div class="lbl">Client stories</div>
+    <h2 class="h2">Trusted by consultants and businesses across the UK</h2>
+    <div class="tes-grid">
+
+      <div class="tes-card">
+        <div class="stars">★★★★★</div>
+        <p class="tes-q">"Within two weeks of listing, I had three qualified inbound enquiries. It's now my primary source of new client work — genuinely transformative."</p>
+        <div class="tes-auth">
+          <img class="tes-av" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&q=80&fit=crop&crop=face" alt="James Whitmore"/>
+          <div><div class="tes-name">James Whitmore</div><div class="tes-role">Strategy Consultant, London</div></div>
+        </div>
+      </div>
+
+      <div class="tes-card">
+        <div class="stars">★★★★★</div>
+        <p class="tes-q">"We found a phenomenal HR transformation consultant in under an hour. The verification gave us complete confidence in their background and credentials."</p>
+        <div class="tes-auth">
+          <img class="tes-av" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&q=80&fit=crop&crop=face" alt="Sarah Chen"/>
+          <div><div class="tes-name">Sarah Chen</div><div class="tes-role">COO, TechScale Ltd</div></div>
+        </div>
+      </div>
+
+      <div class="tes-card">
+        <div class="stars">★★★★★</div>
+        <p class="tes-q">"The brief matching feature is genuinely impressive. I described what we needed and had five perfectly matched consultants respond within 24 hours."</p>
+        <div class="tes-auth">
+          <img class="tes-av" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120&q=80&fit=crop&crop=face" alt="Priya Sharma"/>
+          <div><div class="tes-name">Priya Sharma</div><div class="tes-role">VP Operations, NovaCorp</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     CATEGORIES — image-backed cards
+════════════════════════════════════════ -->
+<section class="cats">
+  <div class="max">
+    <div class="lbl">Browse by speciality</div>
+    <h2 class="h2" style="color:#080808;">Whatever you need, we have the expert</h2>
+    <p class="sub">From strategy to sustainability, find vetted specialists across every major consulting discipline.</p>
+    <div class="cat-grid">
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80&fit=crop&crop=center" alt="Strategy consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">📊</div><div class="cat-nm">Strategy</div><div class="cat-ct">2,340 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=500&q=80&fit=crop" alt="Technology consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">💻</div><div class="cat-nm">Technology</div><div class="cat-ct">3,100 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500&q=80&fit=crop" alt="Finance consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">💰</div><div class="cat-nm">Finance</div><div class="cat-ct">1,890 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&q=80&fit=crop" alt="HR consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">🧑‍🤝‍🧑</div><div class="cat-nm">HR &amp; People</div><div class="cat-ct">1,250 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=500&q=80&fit=crop" alt="Marketing consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">📣</div><div class="cat-nm">Marketing</div><div class="cat-ct">980 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=500&q=80&fit=crop" alt="Legal consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">⚖️</div><div class="cat-nm">Legal &amp; Compliance</div><div class="cat-ct">760 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=500&q=80&fit=crop" alt="Sustainability consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">🌱</div><div class="cat-nm">Sustainability</div><div class="cat-ct">540 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+      <a href="#" class="cat-card">
+        <img src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&q=80&fit=crop" alt="Healthcare consulting" loading="lazy"/>
+        <div class="cat-over"><div class="cat-em">🏥</div><div class="cat-nm">Healthcare</div><div class="cat-ct">620 consultants</div></div>
+        <div class="cat-arr">→</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     CTA — video banner
+════════════════════════════════════════ -->
+<div class="cta-vid">
+  <div class="cta-vid-inner">
+    <video autoplay muted loop playsinline preload="auto"
+      poster="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1400&q=80&fit=crop">
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-large-city-at-sunset-1108-large.mp4" type="video/mp4"/>
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-busy-streets-of-a-city-in-the-morning-3925-large.mp4" type="video/mp4"/>
+      <source src="https://assets.mixkit.co/videos/preview/mixkit-skyscrapers-in-a-cloudy-city-18744-large.mp4" type="video/mp4"/>
+    </video>
+    <div class="cta-vid-overlay"></div>
+    <div class="cta-content">
+      <div class="lbl">Get started today</div>
+      <h2 class="h2">Ready to grow your consulting practice?</h2>
+      <p class="cta-sub">Join 12,000+ consultants already on the register. Create your verified profile in under 10 minutes — free to start.</p>
+      <a href="#" class="btn-wh">List your practice for free →</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo-txt">Consultancy<em>Register</em></div>
+      <p class="foot-desc">The UK's most trusted directory for independent consultants and consulting firms. Connecting expertise with opportunity since 2018.</p>
+      <img class="foot-hero-img"
+        src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=70&fit=crop"
+        alt="London city skyline — UK business hub" loading="lazy"/>
+    </div>
+    <div class="foot-col">
+      <h4>For Consultants</h4>
+      <ul>
+        <li><a href="#">Create a profile</a></li>
+        <li><a href="#">Pricing plans</a></li>
+        <li><a href="#">Verification process</a></li>
+        <li><a href="#">Success stories</a></li>
+        <li><a href="#">Consultant blog</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>For Businesses</h4>
+      <ul>
+        <li><a href="#">Find a consultant</a></li>
+        <li><a href="#">Post a brief</a></li>
+        <li><a href="#">Browse categories</a></li>
+        <li><a href="#">Enterprise plans</a></li>
+        <li><a href="#">Case studies</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About us</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Privacy policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Consultancy Register Ltd. All rights reserved.</span>
+    <span>Made with care in the UK 🇬🇧</span>
+  </div>
+</footer>
+
+<script>
+// ── Hero video: force play + graceful fallback ──────────────────
+(function () {
+  const wrap = document.getElementById('heroVideoWrap');
+  const vid  = document.getElementById('heroVideo');
+  if (!vid) return;
+
+  // Apply required attributes programmatically (some browsers need this)
+  vid.muted    = true;
+  vid.autoplay = true;
+  vid.loop     = true;
+  vid.playsInline = true;
+
+  // Attempt play immediately
+  const tryPlay = () => {
+    vid.play().catch(() => {
+      // If autoplay blocked, show poster + animated gradient fallback
+      wrap.style.background =
+        'linear-gradient(135deg,#0d1f0a 0%,#1a3d12 40%,#0a1508 100%)';
+    });
+  };
+
+  if (vid.readyState >= 2) {
+    tryPlay();
+  } else {
+    vid.addEventListener('canplay', tryPlay, { once: true });
+  }
+
+  // If video errors entirely (network/CORS), show animated gradient
+  vid.addEventListener('error', () => {
+    vid.style.display = 'none';
+    wrap.style.background =
+      'linear-gradient(135deg,#0a1a08 0%,#1e4a16 50%,#080808 100%)';
+    wrap.style.animation = 'bgShift 8s ease-in-out infinite alternate';
+  });
+})();
+
+// ── All page videos: same force-play treatment ──────────────────
+document.querySelectorAll('video').forEach(v => {
+  v.muted = true;
+  const p = v.play();
+  if (p !== undefined) p.catch(() => {});
+});
+
+// ── Scroll reveal — steps ───────────────────────────────────────
+const steps = document.querySelectorAll('.step');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const i = [...steps].indexOf(e.target);
+      setTimeout(() => e.target.classList.add('vis'), i * 150);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.18 });
+steps.forEach(s => io.observe(s));
+
+// ── Nav solidify on scroll ──────────────────────────────────────
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.style.background = window.scrollY > 70
+    ? 'rgba(8,8,8,0.97)' : 'rgba(8,8,8,0.8)';
+}, { passive: true });
+
+// ── Lazy image fade-in ──────────────────────────────────────────
+document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+  img.style.opacity = '0';
+  img.style.transition = 'opacity .55s';
+  if (img.complete) { img.style.opacity = '1'; return; }
+  img.onload = () => { img.style.opacity = '1'; };
+});
+</script>
+<style>
+@keyframes bgShift {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+</style>
+</body>
+</html>
